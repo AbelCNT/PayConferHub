@@ -1,0 +1,13 @@
+com\payconferhub\model\Plano.class
+com\payconferhub\model\Cancellation.class
+com\payconferhub\PayConferHubApplication.class
+com\payconferhub\controller\PlanoController.class
+com\payconferhub\controller\PlanController.class
+com\payconferhub\repository\CancellationRepository.class
+com\payconferhub\service\SNSService.class
+com\payconferhub\service\CancellationService.class
+com\payconferhub\service\PlanService.class
+com\payconferhub\service\ProcessamentoService.class
+com\payconferhub\repository\PlanRepository.class
+com\payconferhub\controller\CancellationController.class
+com\payconferhub\model\Plan.class
