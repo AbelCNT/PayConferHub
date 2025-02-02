@@ -1,2 +1,2 @@
 # PayConferHub
-Projeto para simular conferência de pagamentos com upload de arquivos CSV
+A Spring Boot project for payment calculations based on CSV uploads.

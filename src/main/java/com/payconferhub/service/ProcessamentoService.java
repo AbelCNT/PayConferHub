@@ -2,6 +2,7 @@ package com.payconferhub.service;
 
 import com.payconferhub.model.Plano;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -15,21 +16,7 @@ public class ProcessamentoService {
 
     // Método para processar um arquivo CSV
     public List<Plano> processarCsv(String caminhoArquivo) throws IOException {
-        List<Plano> planos = new ArrayList<>();
-
-        try (BufferedReader br = new BufferedReader(new FileReader(caminhoArquivo))) {
-            String linha;
-            while ((linha = br.readLine()) != null) {
-                String[] dados = linha.split(","); // Supondo que os dados estão separados por vírgula
-                Plano plano = new Plano();
-                plano.setId(Long.parseLong(dados[0]));
-                plano.setNome(dados[1]);
-                plano.setValor(new BigDecimal(dados[2]));
-                plano.setCategoria(dados[3]);
-                planos.add(plano);
-            }
-        }
-        return planos;
+        return null;
     }
 
     // Método para calcular pagamentos com base nas metas
@@ -63,5 +50,8 @@ public class ProcessamentoService {
             return "Meta alcançada!";
         }
         return "Meta não alcançada!";
+    }
+
+    public void processarPlanilhaAtivos(MultipartFile file) {
     }
 }

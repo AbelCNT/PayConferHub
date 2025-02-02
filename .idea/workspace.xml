@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e995449b-f70c-46d8-9ba5-931f59fddf59" name="Changes" comment="" />
+    <list default="true" id="7948c4d0-9342-48ab-9830-bca9fbfa5e50" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -14,16 +14,14 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Class" />
+        <option value="JUnit5 Test Class" />
       </list>
     </option>
   </component>
-  <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
   <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 3
+  &quot;associatedIndex&quot;: 4
 }</component>
-  <component name="ProjectId" id="2nORuAaVA2Q8u6Z71iPjFLhMU3s" />
+  <component name="ProjectId" id="2nUjEw1UXCq9v571cgdoE9Q9YGb" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -31,43 +29,130 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Application.PayConferHubApplication.executor": "Run",
-    "Maven.PayConferHub [clean].executor": "Run",
-    "Maven.PayConferHub [install].executor": "Run",
+    "JUnit.PagamentoServiceTest.executor": "Run",
+    "JUnit.PagamentoServiceTest.testCalcularPagamentoMensal.executor": "Run",
+    "JUnit.PlanoVendaServiceTest.executor": "Run",
+    "JUnit.PlanoVendaServiceTest.testCalcularValorMeta.executor": "Run",
+    "JUnit.PlanoVendaServiceTest.testProcessarPlanosCSV.executor": "Run",
+    "Maven.payconferhub [clean].executor": "Run",
+    "Maven.payconferhub [install].executor": "Run",
+    "Maven.payconferhub [test].executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "feature/tcc",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/abeld/Projetos/PayConferHub",
-    "settings.editor.selected.configurable": "MavenSettings"
+    "last_opened_file_path": "C:/Users/abeld/OneDrive/Área de Trabalho/PayConferHub",
+    "project.structure.last.edited": "SDKs",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   }
 }]]></component>
-  <component name="RunManager">
-    <configuration name="PayConferHubApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.payconferhub.PayConferHubApplication" />
+  <component name="RecentsManager">
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="com.payconferhub.service" />
+    </key>
+  </component>
+  <component name="RunManager" selected="JUnit.PlanoVendaServiceTest">
+    <configuration name="PagamentoServiceTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="PayConferHub" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.payconferhub.*" />
+          <option name="PATTERN" value="com.payconferhub.service.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
+      <option name="PACKAGE_NAME" value="com.payconferhub.service" />
+      <option name="MAIN_CLASS_NAME" value="com.payconferhub.service.PagamentoServiceTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PagamentoServiceTest.testCalcularPagamentoMensal" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="PayConferHub" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.payconferhub.service.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.payconferhub.service" />
+      <option name="MAIN_CLASS_NAME" value="com.payconferhub.service.PagamentoServiceTest" />
+      <option name="METHOD_NAME" value="testCalcularPagamentoMensal" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PlanoVendaServiceTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="PayConferHub" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.payconferhub.service.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.payconferhub.service" />
+      <option name="MAIN_CLASS_NAME" value="com.payconferhub.service.PlanoVendaServiceTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PlanoVendaServiceTest.testCalcularValorMeta" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="PayConferHub" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.payconferhub.service.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.payconferhub.service" />
+      <option name="MAIN_CLASS_NAME" value="com.payconferhub.service.PlanoVendaServiceTest" />
+      <option name="METHOD_NAME" value="testCalcularValorMeta" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PlanoVendaServiceTest.testProcessarPlanosCSV" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="PayConferHub" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.payconferhub.service.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.payconferhub.service" />
+      <option name="MAIN_CLASS_NAME" value="com.payconferhub.service.PlanoVendaServiceTest" />
+      <option name="METHOD_NAME" value="testProcessarPlanosCSV" />
+      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.PayConferHubApplication" />
+        <item itemvalue="JUnit.PlanoVendaServiceTest" />
+        <item itemvalue="JUnit.PagamentoServiceTest" />
+        <item itemvalue="JUnit.PagamentoServiceTest.testCalcularPagamentoMensal" />
+        <item itemvalue="JUnit.PlanoVendaServiceTest.testProcessarPlanosCSV" />
+        <item itemvalue="JUnit.PlanoVendaServiceTest.testCalcularValorMeta" />
       </list>
     </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="e995449b-f70c-46d8-9ba5-931f59fddf59" name="Changes" comment="" />
-      <created>1728842360324</created>
+      <changelist id="7948c4d0-9342-48ab-9830-bca9fbfa5e50" name="Changes" comment="" />
+      <created>1729034441411</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1728842360324</updated>
+      <updated>1729034441411</updated>
     </task>
     <servers />
   </component>
