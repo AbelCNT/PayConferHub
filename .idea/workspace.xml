@@ -4,7 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7948c4d0-9342-48ab-9830-bca9fbfa5e50" name="Changes" comment="" />
+    <list default="true" id="7948c4d0-9342-48ab-9830-bca9fbfa5e50" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/payconferhub/controller/CancellationController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/payconferhub/controller/PlanController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/payconferhub/controller/PlanoController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/payconferhub/model/Cancellation.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/payconferhub/model/Plan.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/payconferhub/model/Plano.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/payconferhub/repository/CancellationRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/payconferhub/repository/PlanRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/payconferhub/service/CancellationService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/payconferhub/service/PlanService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/payconferhub/service/ProcessamentoService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/payconferhub/service/SNSService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/payconferhub/PlanServiceTest.java" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -17,6 +31,9 @@
         <option value="JUnit5 Test Class" />
       </list>
     </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
@@ -34,12 +51,14 @@
     "JUnit.PlanoVendaServiceTest.executor": "Run",
     "JUnit.PlanoVendaServiceTest.testCalcularValorMeta.executor": "Run",
     "JUnit.PlanoVendaServiceTest.testProcessarPlanosCSV.executor": "Run",
+    "JUnit.service in PayConferHub.executor": "Run",
     "Maven.payconferhub [clean].executor": "Run",
     "Maven.payconferhub [install].executor": "Run",
     "Maven.payconferhub [test].executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
     "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
+    "git-widget-placeholder": "feature/tcc",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/abeld/OneDrive/Área de Trabalho/PayConferHub",
     "project.structure.last.edited": "SDKs",
@@ -56,7 +75,7 @@
       <recent name="com.payconferhub.service" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.PlanoVendaServiceTest">
+  <component name="RunManager" selected="JUnit.service in PayConferHub">
     <configuration name="PagamentoServiceTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="PayConferHub" />
       <extension name="coverage">
@@ -103,22 +122,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="PlanoVendaServiceTest.testCalcularValorMeta" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="PayConferHub" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.payconferhub.service.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.payconferhub.service" />
-      <option name="MAIN_CLASS_NAME" value="com.payconferhub.service.PlanoVendaServiceTest" />
-      <option name="METHOD_NAME" value="testCalcularValorMeta" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="PlanoVendaServiceTest.testProcessarPlanosCSV" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="PayConferHub" />
       <extension name="coverage">
@@ -135,13 +138,21 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="service in PayConferHub" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="PayConferHub" />
+      <option name="TEST_OBJECT" value="directory" />
+      <dir value="$PROJECT_DIR$/src/test/java/com/payconferhub/service" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.service in PayConferHub" />
         <item itemvalue="JUnit.PlanoVendaServiceTest" />
         <item itemvalue="JUnit.PagamentoServiceTest" />
         <item itemvalue="JUnit.PagamentoServiceTest.testCalcularPagamentoMensal" />
         <item itemvalue="JUnit.PlanoVendaServiceTest.testProcessarPlanosCSV" />
-        <item itemvalue="JUnit.PlanoVendaServiceTest.testCalcularValorMeta" />
       </list>
     </recent_temporary>
   </component>
