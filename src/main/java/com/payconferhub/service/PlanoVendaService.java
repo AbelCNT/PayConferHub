@@ -22,7 +22,9 @@ public class PlanoVendaService {
     }
 
     /**
-     * Função pura para calcular a meta com base no tipo de plano.
+     * Paradigma funcional: Esta função é pura, pois não altera o estado externo e sempre retorna
+     * o mesmo resultado para os mesmos inputs.
+     * Ela calcula a meta de valor com base no tipo de plano.
      */
     public PlanoVenda calcularValorMeta(PlanoVenda plano) {
         BigDecimal valorMeta = switch (plano.getTipoPlano()) {
@@ -31,22 +33,29 @@ public class PlanoVendaService {
             case "Ouro" -> plano.getValor().multiply(BigDecimal.valueOf(0.15));
             default -> BigDecimal.ZERO;
         };
-        logger.info("Meta calculada para o plano {}: {}", plano.getTipoPlano(), valorMeta);
+        logger.info("[Funcional] Meta calculada para o plano {}: {}", plano.getTipoPlano(), valorMeta);
         return new PlanoVenda(plano.getId(), plano.getTipoPlano(), plano.getStatus(), valorMeta, plano.getDataVenda());
     }
 
     /**
-     * Processa os planos ativos aplicando transformações funcionais e salvando no repositório.
+     * Paradigma reativo: Utiliza o Flux do Reactor para processar planos de forma assíncrona e reativa.
+     *
+     * - Filtra apenas os planos ativos.
+     * - Aplica a transformação funcional para calcular a meta de valor.
+     * - Insere um delay para simular um processamento assíncrono.
+     * - Salva os planos processados no repositório de forma reativa.
      */
     public Flux<PlanoVenda> processarPlanosCSV(Flux<PlanoVenda> planosFlux) {
         return planosFlux
-                .filter(plano -> "ativo".equals(plano.getStatus()))
-                .doOnNext(plano -> logger.info("Filtrando plano ativo: {}", plano))
-                .map(this::calcularValorMeta)
-                .doOnNext(plano -> logger.info("Plano transformado: {}", plano))
-                .delayElements(Duration.ofSeconds(1))
-                .doOnNext(planoVendaRepository::save)
-                .doOnComplete(() -> logger.info("Processamento de planos concluído."))
-                .subscribeOn(Schedulers.boundedElastic());
+                .filter(plano -> "ativo".equals(plano.getStatus())) // Filtrando planos ativos
+                .doOnNext(plano -> logger.info("[Reativo] Filtrando plano ativo: {}", plano))
+                .map(this::calcularValorMeta) // Transformação funcional para calcular valor meta
+                .doOnNext(plano -> logger.info("[Funcional] Plano transformado com meta calculada: {}", plano))
+                .delayElements(Duration.ofSeconds(6)) // Simulação de processamento assíncrono
+                .doOnNext(plano -> logger.info("[Reativo] Simulando processamento assíncrono para o plano: {}", plano))
+                .flatMap(planoVendaRepository::save)  // Reatividade ao salvar no repositório
+                .doOnNext(plano -> logger.info("[Reativo] Plano salvo no repositório: {}", plano))
+                .doOnComplete(() -> logger.info("[Reativo] Processamento de todos os planos concluído."))
+                .subscribeOn(Schedulers.boundedElastic()); // Executa em uma thread elástica para evitar bloqueios
     }
 }

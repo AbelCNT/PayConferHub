@@ -5,19 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7948c4d0-9342-48ab-9830-bca9fbfa5e50" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/payconferhub/controller/CancellationController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/payconferhub/controller/PlanController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/payconferhub/controller/PlanoController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/payconferhub/model/Cancellation.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/payconferhub/model/Plan.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/payconferhub/model/Plano.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/payconferhub/repository/CancellationRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/payconferhub/repository/PlanRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/payconferhub/service/CancellationService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/payconferhub/service/PlanService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/payconferhub/service/ProcessamentoService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/payconferhub/service/SNSService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/payconferhub/PlanServiceTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pagamentos.csv" beforeDir="false" afterPath="$PROJECT_DIR$/pagamentos.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/payconferhub/service/PagamentoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/payconferhub/service/PagamentoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/payconferhub/service/PlanoVendaService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/payconferhub/service/PlanoVendaService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/payconferhub/service/PagamentoServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/payconferhub/service/PagamentoServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/payconferhub/service/PlanoVendaServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/payconferhub/service/PlanoVendaServiceTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,8 +39,11 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Application.PayConferHubApplication.executor": "Run",
+    "JUnit.PagamentoServiceTest.deveCalcularPagamentoMensalAssincrono.executor": "Run",
     "JUnit.PagamentoServiceTest.executor": "Run",
     "JUnit.PagamentoServiceTest.testCalcularPagamentoMensal.executor": "Run",
+    "JUnit.PlanoVendaServiceTest.deveCalcularValorMetaFuncionalmente.executor": "Run",
+    "JUnit.PlanoVendaServiceTest.deveProcessarPlanosCSVDeFormaReativa.executor": "Run",
     "JUnit.PlanoVendaServiceTest.executor": "Run",
     "JUnit.PlanoVendaServiceTest.testCalcularValorMeta.executor": "Run",
     "JUnit.PlanoVendaServiceTest.testProcessarPlanosCSV.executor": "Run",
@@ -75,7 +71,7 @@
       <recent name="com.payconferhub.service" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.service in PayConferHub">
+  <component name="RunManager" selected="JUnit.PlanoVendaServiceTest">
     <configuration name="PagamentoServiceTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="PayConferHub" />
       <extension name="coverage">
@@ -91,7 +87,7 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="PagamentoServiceTest.testCalcularPagamentoMensal" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="PagamentoServiceTest.deveCalcularPagamentoMensalAssincrono" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="PayConferHub" />
       <extension name="coverage">
         <pattern>
@@ -101,7 +97,7 @@
       </extension>
       <option name="PACKAGE_NAME" value="com.payconferhub.service" />
       <option name="MAIN_CLASS_NAME" value="com.payconferhub.service.PagamentoServiceTest" />
-      <option name="METHOD_NAME" value="testCalcularPagamentoMensal" />
+      <option name="METHOD_NAME" value="deveCalcularPagamentoMensalAssincrono" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -122,7 +118,7 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="PlanoVendaServiceTest.testProcessarPlanosCSV" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="PlanoVendaServiceTest.deveCalcularValorMetaFuncionalmente" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="PayConferHub" />
       <extension name="coverage">
         <pattern>
@@ -132,27 +128,35 @@
       </extension>
       <option name="PACKAGE_NAME" value="com.payconferhub.service" />
       <option name="MAIN_CLASS_NAME" value="com.payconferhub.service.PlanoVendaServiceTest" />
-      <option name="METHOD_NAME" value="testProcessarPlanosCSV" />
+      <option name="METHOD_NAME" value="deveCalcularValorMetaFuncionalmente" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="service in PayConferHub" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="PlanoVendaServiceTest.deveProcessarPlanosCSVDeFormaReativa" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="PayConferHub" />
-      <option name="TEST_OBJECT" value="directory" />
-      <dir value="$PROJECT_DIR$/src/test/java/com/payconferhub/service" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.payconferhub.service.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.payconferhub.service" />
+      <option name="MAIN_CLASS_NAME" value="com.payconferhub.service.PlanoVendaServiceTest" />
+      <option name="METHOD_NAME" value="deveProcessarPlanosCSVDeFormaReativa" />
+      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.service in PayConferHub" />
         <item itemvalue="JUnit.PlanoVendaServiceTest" />
+        <item itemvalue="JUnit.PlanoVendaServiceTest.deveProcessarPlanosCSVDeFormaReativa" />
+        <item itemvalue="JUnit.PlanoVendaServiceTest.deveCalcularValorMetaFuncionalmente" />
         <item itemvalue="JUnit.PagamentoServiceTest" />
-        <item itemvalue="JUnit.PagamentoServiceTest.testCalcularPagamentoMensal" />
-        <item itemvalue="JUnit.PlanoVendaServiceTest.testProcessarPlanosCSV" />
+        <item itemvalue="JUnit.PagamentoServiceTest.deveCalcularPagamentoMensalAssincrono" />
       </list>
     </recent_temporary>
   </component>

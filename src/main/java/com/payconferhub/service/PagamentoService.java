@@ -12,77 +12,102 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
+/**
+ * Serviço responsável pelo cálculo e processamento de pagamentos mensais com base nos planos ativos.
+ * Utiliza paradigmas assíncrono, reativo e funcional para otimizar o processamento de dados.
+ */
 @Service
 public class PagamentoService {
+    // Logger para registrar eventos e erros no sistema
     private static final Logger logger = LoggerFactory.getLogger(PagamentoService.class);
 
+    // Repositório para acessar os planos de venda cadastrados no sistema
     private final PlanoVendaRepository planoVendaRepository;
 
+    // Construtor para injetar o repositório via dependência do Spring
     public PagamentoService(PlanoVendaRepository planoVendaRepository) {
         this.planoVendaRepository = planoVendaRepository;
     }
 
-    // Cálculo assíncrono de pagamentos mensais utilizando CompletableFuture.
-    // Paradigma Assíncrono: A utilização de CompletableFuture permite processar os dados sem bloquear a execução principal do programa.
-    // Paradigma Funcional: Operamos transformações nos dados usando streams e funções puras.
+    /**
+     * Calcula o pagamento mensal de forma assíncrona utilizando CompletableFuture.
+     *
+     * Paradigma Assíncrono: Usa CompletableFuture para não bloquear a execução principal do sistema.
+     * Paradigma Reativo: Obtém os planos ativos de forma não bloqueante com reactive streams.
+     * Paradigma Funcional: Aplica transformações e reduções nos dados usando streams.
+     *
+     * @param parceiro Nome do parceiro para o qual será calculado o pagamento.
+     * @return CompletableFuture contendo o objeto Pagamento processado.
+     */
     public CompletableFuture<Pagamento> calcularPagamentoMensal(String parceiro) {
-        logger.info("Iniciando cálculo de pagamento para o parceiro: {}", parceiro);
+        logger.info("[Assíncrono] Iniciando cálculo de pagamento para o parceiro: {}", parceiro);
 
-        return planoVendaRepository.findByStatus("ativo")
-                // Paradigma Reativo: Coletamos dados de forma não bloqueante usando reactive streams.
-                .collectList()
-                .toFuture()
-                .thenApply(planos -> planos.stream()
-                        .map(PlanoVenda::getValor) // Função pura para extrair valores dos planos
-                        .reduce(BigDecimal.ZERO, BigDecimal::add)) // Redução funcional para somar os valores
+        return planoVendaRepository.findByStatus("ativo") // Busca os planos ativos de forma reativa
+                .doOnSubscribe(s -> logger.info("[Reativo] Iniciando a busca de planos ativos"))
+                .collectList() // Converte o Flux em uma lista de planos
+                .doOnNext(planos -> logger.info("[Reativo] Planos ativos encontrados: {}", planos.size()))
+                .toFuture() // Converte para CompletableFuture para continuar o processamento assíncrono
+                .thenApply(planos -> {
+                    logger.info("[Funcional] Processando lista de planos para calcular o valor total");
+                    return planos.stream() // Processa a lista de planos usando programação funcional
+                            .map(PlanoVenda::getValor) // Extrai o valor de cada plano (função pura)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add); // Soma os valores de todos os planos
+                })
                 .thenCompose(valorTotal -> CompletableFuture.supplyAsync(() -> {
-                    logger.info("Valor total calculado: {}", valorTotal);
+                    logger.info("[Assíncrono] Valor total calculado: {}", valorTotal);
+
                     try {
-                        Thread.sleep(5000); // Simulação de processamento lento
+                        logger.info("[Assíncrono] Simulando processamento demorado...");
+                        Thread.sleep(5000); // Simulação de um processamento demorado (poderia ser um acesso a banco ou API externa)
                     } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
+                        Thread.currentThread().interrupt(); // Mantém a thread informada sobre a interrupção
                     }
 
-                    // Criação do objeto pagamento
+                    // Criação do objeto Pagamento com os valores calculados
                     Pagamento pagamento = new Pagamento(null, parceiro, valorTotal, LocalDate.now());
 
-                    // Simulação de salvamento do pagamento em um arquivo CSV
+                    // Salva os dados do pagamento em um arquivo CSV (simulação de persistência)
                     salvarPagamentoEmArquivo(pagamento);
 
-                    return pagamento;
+                    return pagamento; // Retorna o pagamento processado
                 }));
     }
 
-    // Metodo para salvar os dados do pagamento em um arquivo CSV.
+    /**
+     * Salva os dados do pagamento em um arquivo CSV para registro.
+     *
+     * @param pagamento Objeto contendo as informações do pagamento a ser registrado.
+     */
     private void salvarPagamentoEmArquivo(Pagamento pagamento) {
-        String filePath = "pagamentos.csv";
-        try (FileWriter writer = new FileWriter(filePath, true)) {
-            writer.append(pagamento.getParceiro())
+        String filePath = "pagamentos.csv"; // Caminho do arquivo onde os pagamentos serão registrados
+        try (FileWriter writer = new FileWriter(filePath, true)) { // Modo append (não sobrescreve)
+            writer.append(pagamento.getParceiro()) // Adiciona o nome do parceiro
                     .append(",")
-                    .append(pagamento.getValorTotal().toString())
+                    .append(pagamento.getValorTotal().toString()) // Adiciona o valor total do pagamento
                     .append(",")
-                    .append(pagamento.getDataPagamento().toString())
-                    .append("\n");
-            logger.info("Pagamento salvo no arquivo CSV: {}", filePath);
+                    .append(pagamento.getDataPagamento().toString()) // Adiciona a data do pagamento
+                    .append("\n"); // Nova linha para o próximo registro
+            logger.info("[Persistência] Pagamento salvo no arquivo CSV: {}", filePath);
         } catch (IOException e) {
-            logger.error("Erro ao salvar pagamento no arquivo CSV", e);
+            logger.error("[Persistência] Erro ao salvar pagamento no arquivo CSV", e);
         }
     }
 
-    // Metodo que simula uma tarefa paralela enquanto o cálculo do pagamento ocorre.
-    // Paradigma Assíncrono: Demonstra execução paralela independente do cálculo.
+    /**
+     * Metodo que simula uma tarefa paralela enquanto o cálculo do pagamento ocorre.
+     *
+     * Paradigma Assíncrono: Demonstra execução paralela independente do cálculo principal.
+     */
     public void executarOutraTarefa() {
-        logger.info("Executando outra tarefa enquanto o pagamento é calculado...");
+        logger.info("[Paralelo] Executando outra tarefa enquanto o pagamento é calculado...");
         try {
-            Thread.sleep(1000); // Simulação de processamento paralelo
+            Thread.sleep(1000); // Simulação de uma operação que leva 1 segundo
         } catch (InterruptedException e) {
-            logger.error("Erro ao executar tarefa paralela", e);
-            Thread.currentThread().interrupt();
+            logger.error("[Paralelo] Erro ao executar tarefa paralela", e);
+            Thread.currentThread().interrupt(); // Mantém a thread informada sobre a interrupção
         }
-        logger.info("Outra tarefa concluída.");
+        logger.info("[Paralelo] Outra tarefa concluída.");
     }
 }
