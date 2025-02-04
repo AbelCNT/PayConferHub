@@ -8,14 +8,12 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 /**
@@ -57,7 +55,7 @@ class PagamentoServiceTest {
                 })
                 .verifyComplete();
 
-        // Verifica se o método reativo do repositório foi chamado
+        // Verifica se o metodo reativo do repositório foi chamado
         verify(planoVendaRepository, times(1)).findByStatus("ativo");
     }
 }

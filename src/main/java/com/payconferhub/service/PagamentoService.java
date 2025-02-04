@@ -32,7 +32,7 @@ public class PagamentoService {
 
     /**
      * Calcula o pagamento mensal de forma assíncrona.
-     *
+     * <p>
      * Paradigma Assíncrono: Não bloqueia a execução principal do sistema.
      * Paradigma Reativo: Processa dados de forma não bloqueante usando Mono.
      * Paradigma Funcional: Usa operações funcionais para transformação e processamento de dados.
@@ -71,7 +71,7 @@ public class PagamentoService {
      * Executa o cálculo demorado do pagamento de forma assíncrona e reativa utilizando Mono.
      *
      * @param valorTotal Valor total dos planos calculado previamente.
-     * @param parceiro Nome do parceiro para o qual será calculado o pagamento.
+     * @param parceiro   Nome do parceiro para o qual será calculado o pagamento.
      * @return Mono contendo o objeto Pagamento processado.
      */
     private Mono<Pagamento> executarCalculoDemorado(BigDecimal valorTotal, String parceiro) {
