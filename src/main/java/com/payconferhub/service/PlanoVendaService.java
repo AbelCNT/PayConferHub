@@ -11,6 +11,10 @@ import reactor.core.scheduler.Schedulers;
 import java.math.BigDecimal;
 import java.time.Duration;
 
+/**
+ * Serviço responsável pelo processamento dos planos de venda.
+ * Utiliza paradigmas funcionais e reativos para otimizar o processamento.
+ */
 @Service
 public class PlanoVendaService {
     private static final Logger logger = LoggerFactory.getLogger(PlanoVendaService.class);
@@ -22,9 +26,8 @@ public class PlanoVendaService {
     }
 
     /**
-     * Paradigma funcional: Esta função é pura, pois não altera o estado externo e sempre retorna
-     * o mesmo resultado para os mesmos inputs.
-     * Ela calcula a meta de valor com base no tipo de plano.
+     * Calcula a meta de valor com base no tipo de plano.
+     * Paradigma funcional: função pura que não altera o estado externo e sempre retorna o mesmo resultado para os mesmos inputs.
      */
     public PlanoVenda calcularValorMeta(PlanoVenda plano) {
         BigDecimal valorMeta = switch (plano.getTipoPlano()) {
@@ -38,8 +41,7 @@ public class PlanoVendaService {
     }
 
     /**
-     * Paradigma reativo: Utiliza o Flux do Reactor para processar planos de forma assíncrona e reativa.
-     *
+     * Processa os planos de forma assíncrona e reativa.
      * - Filtra apenas os planos ativos.
      * - Aplica a transformação funcional para calcular a meta de valor.
      * - Insere um delay para simular um processamento assíncrono.
@@ -51,7 +53,7 @@ public class PlanoVendaService {
                 .doOnNext(plano -> logger.info("[Reativo] Filtrando plano ativo: {}", plano))
                 .map(this::calcularValorMeta) // Transformação funcional para calcular valor meta
                 .doOnNext(plano -> logger.info("[Funcional] Plano transformado com meta calculada: {}", plano))
-                .delayElements(Duration.ofSeconds(6)) // Simulação de processamento assíncrono
+                .delayElements(Duration.ofSeconds(1)) // Simulação de processamento assíncrono
                 .doOnNext(plano -> logger.info("[Reativo] Simulando processamento assíncrono para o plano: {}", plano))
                 .flatMap(planoVendaRepository::save)  // Reatividade ao salvar no repositório
                 .doOnNext(plano -> logger.info("[Reativo] Plano salvo no repositório: {}", plano))

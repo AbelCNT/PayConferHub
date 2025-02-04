@@ -6,13 +6,16 @@ import com.payconferhub.repositories.PlanoVendaRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.IntStream;
 
 /**
  * Serviço responsável pelo cálculo e processamento de pagamentos mensais com base nos planos ativos.
@@ -20,75 +23,95 @@ import java.util.concurrent.CompletableFuture;
  */
 @Service
 public class PagamentoService {
-    // Logger para registrar eventos e erros no sistema
     private static final Logger logger = LoggerFactory.getLogger(PagamentoService.class);
-
-    // Repositório para acessar os planos de venda cadastrados no sistema
     private final PlanoVendaRepository planoVendaRepository;
 
-    // Construtor para injetar o repositório via dependência do Spring
     public PagamentoService(PlanoVendaRepository planoVendaRepository) {
         this.planoVendaRepository = planoVendaRepository;
     }
 
     /**
-     * Calcula o pagamento mensal de forma assíncrona utilizando CompletableFuture.
+     * Calcula o pagamento mensal de forma assíncrona.
      *
-     * Paradigma Assíncrono: Usa CompletableFuture para não bloquear a execução principal do sistema.
-     * Paradigma Reativo: Obtém os planos ativos de forma não bloqueante com reactive streams.
-     * Paradigma Funcional: Aplica transformações e reduções nos dados usando streams.
+     * Paradigma Assíncrono: Não bloqueia a execução principal do sistema.
+     * Paradigma Reativo: Processa dados de forma não bloqueante usando Mono.
+     * Paradigma Funcional: Usa operações funcionais para transformação e processamento de dados.
      *
      * @param parceiro Nome do parceiro para o qual será calculado o pagamento.
-     * @return CompletableFuture contendo o objeto Pagamento processado.
+     * @return Mono contendo o objeto Pagamento processado.
      */
-    public CompletableFuture<Pagamento> calcularPagamentoMensal(String parceiro) {
+    public Mono<Pagamento> calcularPagamentoMensal(String parceiro) {
         logger.info("[Assíncrono] Iniciando cálculo de pagamento para o parceiro: {}", parceiro);
 
-        return planoVendaRepository.findByStatus("ativo") // Busca os planos ativos de forma reativa
-                .doOnSubscribe(s -> logger.info("[Reativo] Iniciando a busca de planos ativos"))
+        return planoVendaRepository.findByStatus("ativo")
+                .doOnSubscribe(subscription -> logger.info("[Reativo] Iniciando busca dos planos ativos"))
                 .collectList() // Converte o Flux em uma lista de planos
                 .doOnNext(planos -> logger.info("[Reativo] Planos ativos encontrados: {}", planos.size()))
-                .toFuture() // Converte para CompletableFuture para continuar o processamento assíncrono
-                .thenApply(planos -> {
-                    logger.info("[Funcional] Processando lista de planos para calcular o valor total");
-                    return planos.stream() // Processa a lista de planos usando programação funcional
-                            .map(PlanoVenda::getValor) // Extrai o valor de cada plano (função pura)
-                            .reduce(BigDecimal.ZERO, BigDecimal::add); // Soma os valores de todos os planos
+                .flatMap(planos -> {
+                    BigDecimal valorTotal = calcularValorTotal(planos); // Processa a lista de planos usando operações funcionais
+                    return executarCalculoDemorado(valorTotal, parceiro); // Executa o cálculo assíncrono do pagamento
                 })
-                .thenCompose(valorTotal -> CompletableFuture.supplyAsync(() -> {
-                    logger.info("[Assíncrono] Valor total calculado: {}", valorTotal);
+                .subscribeOn(Schedulers.boundedElastic()); // Define a scheduler para execução do Mono
+    }
 
+    /**
+     * Calcula o valor total dos planos de forma funcional.
+     *
+     * @param planos Lista de planos de venda.
+     * @return Valor total somado de todos os planos.
+     */
+    private BigDecimal calcularValorTotal(List<PlanoVenda> planos) {
+        logger.info("[Funcional] Processando lista de planos para calcular o valor total");
+        return planos.stream()
+                .map(PlanoVenda::getValor)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    /**
+     * Executa o cálculo demorado do pagamento de forma assíncrona e reativa utilizando Mono.
+     *
+     * @param valorTotal Valor total dos planos calculado previamente.
+     * @param parceiro Nome do parceiro para o qual será calculado o pagamento.
+     * @return Mono contendo o objeto Pagamento processado.
+     */
+    private Mono<Pagamento> executarCalculoDemorado(BigDecimal valorTotal, String parceiro) {
+        return Mono.fromCallable(() -> {
+                    logger.info("[Assíncrono] Simulando processamento demorado do cálculo...");
+                    executarMultiplasTarefasParalelas(3); // Executa tarefas paralelas simuladas
                     try {
-                        logger.info("[Assíncrono] Simulando processamento demorado...");
-                        Thread.sleep(5000); // Simulação de um processamento demorado (poderia ser um acesso a banco ou API externa)
+                        Thread.sleep(7000); // Simula uma operação demorada
                     } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt(); // Mantém a thread informada sobre a interrupção
+                        Thread.currentThread().interrupt();
                     }
+                    logger.info("[Assíncrono] Valor total calculado: {}", valorTotal);
 
                     // Criação do objeto Pagamento com os valores calculados
                     Pagamento pagamento = new Pagamento(null, parceiro, valorTotal, LocalDate.now());
 
-                    // Salva os dados do pagamento em um arquivo CSV (simulação de persistência)
+                    // Salva os dados do pagamento em um arquivo CSV
                     salvarPagamentoEmArquivo(pagamento);
 
-                    return pagamento; // Retorna o pagamento processado
-                }));
+                    return pagamento;
+                })
+                .doOnSubscribe(subscription -> logger.info("[Reativo] Iniciando cálculo demorado"))
+                .doOnSuccess(pagamento -> logger.info("[Reativo] Cálculo demorado concluído"))
+                .subscribeOn(Schedulers.boundedElastic());
     }
 
     /**
-     * Salva os dados do pagamento em um arquivo CSV para registro.
+     * Salva os dados do pagamento em um arquivo CSV.
      *
      * @param pagamento Objeto contendo as informações do pagamento a ser registrado.
      */
     private void salvarPagamentoEmArquivo(Pagamento pagamento) {
-        String filePath = "pagamentos.csv"; // Caminho do arquivo onde os pagamentos serão registrados
-        try (FileWriter writer = new FileWriter(filePath, true)) { // Modo append (não sobrescreve)
-            writer.append(pagamento.getParceiro()) // Adiciona o nome do parceiro
+        String filePath = "pagamentos.csv";
+        try (FileWriter writer = new FileWriter(filePath, true)) {
+            writer.append(pagamento.getParceiro())
                     .append(",")
-                    .append(pagamento.getValorTotal().toString()) // Adiciona o valor total do pagamento
+                    .append(pagamento.getValorTotal().toString())
                     .append(",")
-                    .append(pagamento.getDataPagamento().toString()) // Adiciona a data do pagamento
-                    .append("\n"); // Nova linha para o próximo registro
+                    .append(pagamento.getDataPagamento().toString())
+                    .append("\n");
             logger.info("[Persistência] Pagamento salvo no arquivo CSV: {}", filePath);
         } catch (IOException e) {
             logger.error("[Persistência] Erro ao salvar pagamento no arquivo CSV", e);
@@ -96,18 +119,24 @@ public class PagamentoService {
     }
 
     /**
-     * Metodo que simula uma tarefa paralela enquanto o cálculo do pagamento ocorre.
+     * Executa múltiplas tarefas paralelas de forma assíncrona enquanto o cálculo do pagamento ocorre.
      *
-     * Paradigma Assíncrono: Demonstra execução paralela independente do cálculo principal.
+     * @param numeroDeTarefas Número de tarefas a serem executadas em paralelo.
      */
-    public void executarOutraTarefa() {
-        logger.info("[Paralelo] Executando outra tarefa enquanto o pagamento é calculado...");
-        try {
-            Thread.sleep(1000); // Simulação de uma operação que leva 1 segundo
-        } catch (InterruptedException e) {
-            logger.error("[Paralelo] Erro ao executar tarefa paralela", e);
-            Thread.currentThread().interrupt(); // Mantém a thread informada sobre a interrupção
-        }
-        logger.info("[Paralelo] Outra tarefa concluída.");
+    private void executarMultiplasTarefasParalelas(int numeroDeTarefas) {
+        CompletableFuture<?>[] tarefas = IntStream.rangeClosed(1, numeroDeTarefas)
+                .mapToObj(numeroTarefa -> CompletableFuture.runAsync(() -> {
+                    logger.info("[Paralelo] Executando tarefa {} enquanto o pagamento é calculado...", numeroTarefa);
+                    try {
+                        Thread.sleep(1000); // Simulação de uma tarefa paralela
+                    } catch (InterruptedException e) {
+                        logger.error("[Paralelo] Erro ao executar tarefa paralela {}", numeroTarefa, e);
+                        Thread.currentThread().interrupt(); // Mantém a thread informada sobre a interrupção
+                    }
+                    logger.info("[Paralelo] Tarefa {} concluída.", numeroTarefa);
+                }))
+                .toArray(CompletableFuture[]::new);
+
+        CompletableFuture.allOf(tarefas).join(); // Aguarda a conclusão de todas as tarefas paralelas
     }
 }

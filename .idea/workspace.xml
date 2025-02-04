@@ -7,10 +7,10 @@
     <list default="true" id="7948c4d0-9342-48ab-9830-bca9fbfa5e50" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pagamentos.csv" beforeDir="false" afterPath="$PROJECT_DIR$/pagamentos.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/payconferhub/controllers/PagamentoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/payconferhub/controllers/PagamentoController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/payconferhub/service/PagamentoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/payconferhub/service/PagamentoService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/payconferhub/service/PlanoVendaService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/payconferhub/service/PlanoVendaService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/java/com/payconferhub/service/PagamentoServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/payconferhub/service/PagamentoServiceTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/payconferhub/service/PlanoVendaServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/payconferhub/service/PlanoVendaServiceTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,8 +20,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Class" />
         <option value="JUnit5 Test Class" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -38,8 +38,10 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Application.ParadigmasDemo.executor": "Run",
     "Application.PayConferHubApplication.executor": "Run",
     "JUnit.PagamentoServiceTest.deveCalcularPagamentoMensalAssincrono.executor": "Run",
+    "JUnit.PagamentoServiceTest.deveValidarFluxoReativo.executor": "Run",
     "JUnit.PagamentoServiceTest.executor": "Run",
     "JUnit.PagamentoServiceTest.testCalcularPagamentoMensal.executor": "Run",
     "JUnit.PlanoVendaServiceTest.deveCalcularValorMetaFuncionalmente.executor": "Run",
@@ -71,7 +73,7 @@
       <recent name="com.payconferhub.service" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.PlanoVendaServiceTest">
+  <component name="RunManager" selected="JUnit.PlanoVendaServiceTest.deveProcessarPlanosCSVDeFormaReativa">
     <configuration name="PagamentoServiceTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="PayConferHub" />
       <extension name="coverage">
@@ -152,9 +154,9 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.PlanoVendaServiceTest" />
         <item itemvalue="JUnit.PlanoVendaServiceTest.deveProcessarPlanosCSVDeFormaReativa" />
         <item itemvalue="JUnit.PlanoVendaServiceTest.deveCalcularValorMetaFuncionalmente" />
+        <item itemvalue="JUnit.PlanoVendaServiceTest" />
         <item itemvalue="JUnit.PagamentoServiceTest" />
         <item itemvalue="JUnit.PagamentoServiceTest.deveCalcularPagamentoMensalAssincrono" />
       </list>
@@ -170,5 +172,16 @@
       <updated>1729034441411</updated>
     </task>
     <servers />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/test/java/com/payconferhub/service/PagamentoServiceTest.java</url>
+          <line>24</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
