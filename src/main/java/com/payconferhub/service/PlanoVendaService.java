@@ -10,6 +10,7 @@ import reactor.core.scheduler.Schedulers;
 
 import java.math.BigDecimal;
 import java.time.Duration;
+import java.time.LocalDateTime;
 
 /**
  * Serviço responsável pelo processamento dos planos de venda.
@@ -28,16 +29,26 @@ public class PlanoVendaService {
     /**
      * Calcula a meta de valor com base no tipo de plano.
      * Paradigma funcional: função pura que não altera o estado externo e sempre retorna o mesmo resultado para os mesmos inputs.
+     *
+     * @param plano Plano de venda a ser processado.
+     * @return Plano de venda com a meta de valor calculada.
      */
     public PlanoVenda calcularValorMeta(PlanoVenda plano) {
+        logger.info("[{}] [Thread-{}] [PlanoVendaService] [Funcional] Calculando meta para o plano: {}",
+                LocalDateTime.now(), Thread.currentThread().getId(), plano);
+
         BigDecimal valorMeta = switch (plano.getTipoPlano()) {
             case "Bronze" -> plano.getValor().multiply(BigDecimal.valueOf(0.05));
             case "Prata" -> plano.getValor().multiply(BigDecimal.valueOf(0.10));
             case "Ouro" -> plano.getValor().multiply(BigDecimal.valueOf(0.15));
             default -> BigDecimal.ZERO;
         };
-        logger.info("[Funcional] Meta calculada para o plano {}: {}", plano.getTipoPlano(), valorMeta);
-        return new PlanoVenda(plano.getId(), plano.getTipoPlano(), plano.getStatus(), valorMeta, plano.getDataVenda());
+
+        PlanoVenda planoComMeta = new PlanoVenda(plano.getId(), plano.getTipoPlano(), plano.getStatus(), valorMeta, plano.getDataVenda());
+
+        logger.info("[{}] [Thread-{}] [PlanoVendaService] [Funcional] Meta calculada para o plano {}: {}",
+                LocalDateTime.now(), Thread.currentThread().getId(), plano.getTipoPlano(), valorMeta);
+        return planoComMeta;
     }
 
     /**
@@ -46,18 +57,39 @@ public class PlanoVendaService {
      * - Aplica a transformação funcional para calcular a meta de valor.
      * - Insere um delay para simular um processamento assíncrono.
      * - Salva os planos processados no repositório de forma reativa.
+     *
+     * @param planosFlux Flux de planos de venda a serem processados.
+     * @return Flux de planos de venda processados.
      */
     public Flux<PlanoVenda> processarPlanosCSV(Flux<PlanoVenda> planosFlux) {
+        logger.info("[{}] [Thread-{}] [PlanoVendaService] [Entrada] processarPlanosCSV com flux: {}",
+                LocalDateTime.now(), Thread.currentThread().getId(), planosFlux);
+
         return planosFlux
-                .filter(plano -> "ativo".equals(plano.getStatus())) // Filtrando planos ativos
-                .doOnNext(plano -> logger.info("[Reativo] Filtrando plano ativo: {}", plano))
-                .map(this::calcularValorMeta) // Transformação funcional para calcular valor meta
-                .doOnNext(plano -> logger.info("[Funcional] Plano transformado com meta calculada: {}", plano))
-                .delayElements(Duration.ofSeconds(1)) // Simulação de processamento assíncrono
-                .doOnNext(plano -> logger.info("[Reativo] Simulando processamento assíncrono para o plano: {}", plano))
-                .flatMap(planoVendaRepository::save)  // Reatividade ao salvar no repositório
-                .doOnNext(plano -> logger.info("[Reativo] Plano salvo no repositório: {}", plano))
-                .doOnComplete(() -> logger.info("[Reativo] Processamento de todos os planos concluído."))
-                .subscribeOn(Schedulers.boundedElastic()); // Executa em uma thread elástica para evitar bloqueios
+                .filter(plano -> {
+                    boolean ativo = "ativo".equals(plano.getStatus());
+                    logger.info("[{}] [Thread-{}] [PlanoVendaService] [Reativo] Filtrando plano: {}, Ativo: {}",
+                            LocalDateTime.now(), Thread.currentThread().getId(), plano, ativo);
+                    return ativo;
+                })
+                .map(this::calcularValorMeta)
+                .doOnNext(plano ->
+                        logger.info("[{}] [Thread-{}] [PlanoVendaService] [Funcional] Plano transformado com meta calculada: {}",
+                                LocalDateTime.now(), Thread.currentThread().getId(), plano))
+                .delayElements(Duration.ofSeconds(1))
+                .doOnNext(plano ->
+                        logger.info("[{}] [Thread-{}] [PlanoVendaService] [Reativo] Simulando processamento assíncrono para o plano: {}",
+                                LocalDateTime.now(), Thread.currentThread().getId(), plano))
+                .flatMap(planoVendaRepository::save)
+                .doOnNext(plano ->
+                        logger.info("[{}] [Thread-{}] [PlanoVendaService] [Reativo] Plano salvo no repositório: {}",
+                                LocalDateTime.now(), Thread.currentThread().getId(), plano))
+                .doOnComplete(() ->
+                        logger.info("[{}] [Thread-{}] [PlanoVendaService] [Reativo] Processamento de todos os planos concluído.",
+                                LocalDateTime.now(), Thread.currentThread().getId()))
+                .subscribeOn(Schedulers.boundedElastic())
+                .doFinally(signalType ->
+                        logger.info("[{}] [Thread-{}] [PlanoVendaService] [Saída] processarPlanosCSV com signal: {}",
+                                LocalDateTime.now(), Thread.currentThread().getId(), signalType));
     }
 }

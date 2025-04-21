@@ -13,6 +13,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.IntStream;
@@ -41,17 +42,27 @@ public class PagamentoService {
      * @return Mono contendo o objeto Pagamento processado.
      */
     public Mono<Pagamento> calcularPagamentoMensal(String parceiro) {
-        logger.info("[Assíncrono] Iniciando cálculo de pagamento para o parceiro: {}", parceiro);
+        logger.info("[{}] [Thread-{}] [PagamentoService] [Entrada] calcularPagamentoMensal para parceiro: {}",
+                LocalDateTime.now(), Thread.currentThread().getId(), parceiro);
 
         return planoVendaRepository.findByStatus("ativo")
-                .doOnSubscribe(subscription -> logger.info("[Reativo] Iniciando busca dos planos ativos"))
-                .collectList() // Converte o Flux em uma lista de planos
-                .doOnNext(planos -> logger.info("[Reativo] Planos ativos encontrados: {}", planos.size()))
+                .doOnSubscribe(subscription ->
+                        logger.info("[{}] [Thread-{}] [PagamentoService] [Reativo] Iniciando busca dos planos ativos",
+                                LocalDateTime.now(), Thread.currentThread().getId()))
+                .collectList()
+                .doOnNext(planos ->
+                        logger.info("[{}] [Thread-{}] [PagamentoService] [Reativo] Planos ativos encontrados: {}",
+                                LocalDateTime.now(), Thread.currentThread().getId(), planos.size()))
                 .flatMap(planos -> {
-                    BigDecimal valorTotal = calcularValorTotal(planos); // Processa a lista de planos usando operações funcionais
-                    return executarCalculoDemorado(valorTotal, parceiro); // Executa o cálculo assíncrono do pagamento
+                    logger.info("[{}] [Thread-{}] [PagamentoService] [Funcional] Processando lista de planos para calcular o valor total",
+                            LocalDateTime.now(), Thread.currentThread().getId());
+                    BigDecimal valorTotal = calcularValorTotal(planos);
+                    return executarCalculoDemorado(valorTotal, parceiro);
                 })
-                .subscribeOn(Schedulers.boundedElastic()); // Define a scheduler para execução do Mono
+                .subscribeOn(Schedulers.boundedElastic())
+                .doFinally(signalType ->
+                        logger.info("[{}] [Thread-{}] [PagamentoService] [Saída] calcularPagamentoMensal para parceiro: {}",
+                                LocalDateTime.now(), Thread.currentThread().getId(), parceiro));
     }
 
     /**
@@ -61,7 +72,6 @@ public class PagamentoService {
      * @return Valor total somado de todos os planos.
      */
     private BigDecimal calcularValorTotal(List<PlanoVenda> planos) {
-        logger.info("[Funcional] Processando lista de planos para calcular o valor total");
         return planos.stream()
                 .map(PlanoVenda::getValor)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -75,27 +85,34 @@ public class PagamentoService {
      * @return Mono contendo o objeto Pagamento processado.
      */
     private Mono<Pagamento> executarCalculoDemorado(BigDecimal valorTotal, String parceiro) {
+        long startTime = System.currentTimeMillis();
+        logger.info("[{}] [Thread-{}] [PagamentoService] [Reativo] Iniciando cálculo demorado...",
+                LocalDateTime.now(), Thread.currentThread().getId());
+
         return Mono.fromCallable(() -> {
-                    logger.info("[Assíncrono] Simulando processamento demorado do cálculo...");
-                    executarMultiplasTarefasParalelas(3); // Executa tarefas paralelas simuladas
+                    logger.info("[{}] [Thread-{}] [PagamentoService] [Assíncrono] Simulando processamento demorado do cálculo...",
+                            LocalDateTime.now(), Thread.currentThread().getId());
+                    executarMultiplasTarefasParalelas(3);
                     try {
-                        Thread.sleep(7000); // Simula uma operação demorada
+                        Thread.sleep(7000);
                     } catch (InterruptedException e) {
+                        logger.error("[{}] [Thread-{}] [PagamentoService] [Assíncrono] Erro durante a simulação de atraso: {}",
+                                LocalDateTime.now(), Thread.currentThread().getId(), e.getMessage(), e);
                         Thread.currentThread().interrupt();
                     }
-                    logger.info("[Assíncrono] Valor total calculado: {}", valorTotal);
-
-                    // Criação do objeto Pagamento com os valores calculados
                     Pagamento pagamento = new Pagamento(null, parceiro, valorTotal, LocalDate.now());
+                    logger.info("[{}] [Thread-{}] [PagamentoService] [Assíncrono] Valor total calculado: {}",
+                            LocalDateTime.now(), Thread.currentThread().getId(), valorTotal);
 
-                    // Salva os dados do pagamento em um arquivo CSV
                     salvarPagamentoEmArquivo(pagamento);
-
                     return pagamento;
                 })
-                .doOnSubscribe(subscription -> logger.info("[Reativo] Iniciando cálculo demorado"))
-                .doOnSuccess(pagamento -> logger.info("[Reativo] Cálculo demorado concluído"))
-                .subscribeOn(Schedulers.boundedElastic());
+                .subscribeOn(Schedulers.boundedElastic())
+                .doOnSuccess(pagamento -> {
+                    long endTime = System.currentTimeMillis();
+                    logger.info("[{}] [Thread-{}] [PagamentoService] [Reativo] Cálculo demorado concluído. Tempo: {}ms",
+                            LocalDateTime.now(), Thread.currentThread().getId(), endTime - startTime);
+                });
     }
 
     /**
@@ -112,9 +129,11 @@ public class PagamentoService {
                     .append(",")
                     .append(pagamento.getDataPagamento().toString())
                     .append("\n");
-            logger.info("[Persistência] Pagamento salvo no arquivo CSV: {}", filePath);
+            logger.info("[{}] [Thread-{}] [PagamentoService] [Persistência] Pagamento salvo no arquivo CSV: {}",
+                    LocalDateTime.now(), Thread.currentThread().getId(), filePath);
         } catch (IOException e) {
-            logger.error("[Persistência] Erro ao salvar pagamento no arquivo CSV", e);
+            logger.error("[{}] [Thread-{}] [PagamentoService] [Persistência] Erro ao salvar pagamento no arquivo CSV",
+                    LocalDateTime.now(), Thread.currentThread().getId(), e);
         }
     }
 
@@ -126,17 +145,22 @@ public class PagamentoService {
     private void executarMultiplasTarefasParalelas(int numeroDeTarefas) {
         CompletableFuture<?>[] tarefas = IntStream.rangeClosed(1, numeroDeTarefas)
                 .mapToObj(numeroTarefa -> CompletableFuture.runAsync(() -> {
-                    logger.info("[Paralelo] Executando tarefa {} enquanto o pagamento é calculado...", numeroTarefa);
+                    logger.info("[{}] [Thread-{}] [PagamentoService] [Paralelo] Executando tarefa {}...",
+                            LocalDateTime.now(), Thread.currentThread().getId(), numeroTarefa);
+                    long startTime = System.currentTimeMillis();
                     try {
-                        Thread.sleep(1000); // Simulação de uma tarefa paralela
+                        Thread.sleep(1000);
                     } catch (InterruptedException e) {
-                        logger.error("[Paralelo] Erro ao executar tarefa paralela {}", numeroTarefa, e);
-                        Thread.currentThread().interrupt(); // Mantém a thread informada sobre a interrupção
+                        logger.error("[{}] [Thread-{}] [PagamentoService] [Paralelo] Erro ao executar tarefa {}: {}",
+                                LocalDateTime.now(), Thread.currentThread().getId(), numeroTarefa, e.getMessage(), e);
+                        Thread.currentThread().interrupt();
                     }
-                    logger.info("[Paralelo] Tarefa {} concluída.", numeroTarefa);
+                    long endTime = System.currentTimeMillis();
+                    logger.info("[{}] [Thread-{}] [PagamentoService] [Paralelo] Tarefa {} concluída. Tempo: {}ms",
+                            LocalDateTime.now(), Thread.currentThread().getId(), numeroTarefa, endTime - startTime);
                 }))
                 .toArray(CompletableFuture[]::new);
 
-        CompletableFuture.allOf(tarefas).join(); // Aguarda a conclusão de todas as tarefas paralelas
+        CompletableFuture.allOf(tarefas).join();
     }
 }
