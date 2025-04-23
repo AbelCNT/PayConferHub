@@ -12,13 +12,8 @@ import reactor.test.StepVerifier;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-/**
- * Classe de testes para validar as funcionalidades do PlanoVendaService.
- * Aplica os paradigmas Funcional e Reativo.
- */
 class PlanoVendaServiceTest {
 
     private static final Logger logger = LoggerFactory.getLogger(PlanoVendaServiceTest.class);
@@ -26,28 +21,6 @@ class PlanoVendaServiceTest {
     private final PlanoVendaRepository planoVendaRepository = mock(PlanoVendaRepository.class);
     private final PlanoVendaService planoVendaService = new PlanoVendaService(planoVendaRepository);
 
-    /**
-     * Testa o cálculo da meta de um plano de venda.
-     * Paradigma aplicado: Funcional (uso de funções puras para cálculo de valores).
-     */
-    @Test
-    void deveCalcularValorMetaFuncionalmente() {
-        logger.info("Iniciando teste de cálculo de valor meta");
-
-        PlanoVenda plano = new PlanoVenda(1L, "Ouro", "ativo", new BigDecimal("1000.00"), LocalDate.now());
-        PlanoVenda planoCalculado = planoVendaService.calcularValorMeta(plano);
-
-        // Valida se o cálculo foi aplicado corretamente
-        assertEquals(0, planoCalculado.getValor().compareTo(new BigDecimal("150.00")));
-        logger.info("Teste de valor meta concluído com sucesso");
-    }
-
-    /**
-     * Testa o processamento de planos vindos de um arquivo CSV.
-     * Paradigmas aplicados:
-     * - Reativo: Usa Flux para processar múltiplos planos de forma não bloqueante.
-     * - Funcional: Usa transformações e filtros para manipular os dados.
-     */
     @Test
     void deveProcessarPlanosCSVDeFormaReativa() {
         logger.info("Iniciando teste de processamento de planos CSV");

@@ -16,22 +16,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
-/**
- * Classe de testes para validar as funcionalidades do PagamentoService.
- * Aplica os paradigmas Assíncrono, Reativo e Funcional.
- */
 class PagamentoServiceTest {
 
     private final PlanoVendaRepository planoVendaRepository = mock(PlanoVendaRepository.class);
     private final PagamentoService pagamentoService = new PagamentoService(planoVendaRepository);
 
-    /**
-     * Testa o cálculo de pagamento mensal.
-     * Paradigmas aplicados:
-     * - Assíncrono: Uso de CompletableFuture para processamento paralelo.
-     * - Funcional: Uso de Streams para somar valores de planos.
-     * - Reativo: Obtém dados de forma não bloqueante com Flux.
-     */
+
     @Test
     void deveCalcularPagamentoMensal() {
         List<PlanoVenda> planosAtivos = List.of(

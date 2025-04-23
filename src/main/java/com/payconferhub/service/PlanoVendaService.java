@@ -12,10 +12,6 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-/**
- * Serviço responsável pelo processamento dos planos de venda.
- * Utiliza paradigmas funcionais e reativos para otimizar o processamento.
- */
 @Service
 public class PlanoVendaService {
     private static final Logger logger = LoggerFactory.getLogger(PlanoVendaService.class);
@@ -26,15 +22,8 @@ public class PlanoVendaService {
         this.planoVendaRepository = planoVendaRepository;
     }
 
-    /**
-     * Calcula a meta de valor com base no tipo de plano.
-     * Paradigma funcional: função pura que não altera o estado externo e sempre retorna o mesmo resultado para os mesmos inputs.
-     *
-     * @param plano Plano de venda a ser processado.
-     * @return Plano de venda com a meta de valor calculada.
-     */
     public PlanoVenda calcularValorMeta(PlanoVenda plano) {
-        logger.info("[{}] [Thread-{}] [PlanoVendaService] [Funcional] Calculando meta para o plano: {}",
+        logger.info("[{}] [Thread-{}] [PlanoVendaService] Calculando meta para o plano: {}",
                 LocalDateTime.now(), Thread.currentThread().getId(), plano);
 
         BigDecimal valorMeta = switch (plano.getTipoPlano()) {
@@ -46,21 +35,11 @@ public class PlanoVendaService {
 
         PlanoVenda planoComMeta = new PlanoVenda(plano.getId(), plano.getTipoPlano(), plano.getStatus(), valorMeta, plano.getDataVenda());
 
-        logger.info("[{}] [Thread-{}] [PlanoVendaService] [Funcional] Meta calculada para o plano {}: {}",
+        logger.info("[{}] [Thread-{}] [PlanoVendaService] Meta calculada para o plano {}: {}",
                 LocalDateTime.now(), Thread.currentThread().getId(), plano.getTipoPlano(), valorMeta);
         return planoComMeta;
     }
 
-    /**
-     * Processa os planos de forma assíncrona e reativa.
-     * - Filtra apenas os planos ativos.
-     * - Aplica a transformação funcional para calcular a meta de valor.
-     * - Insere um delay para simular um processamento assíncrono.
-     * - Salva os planos processados no repositório de forma reativa.
-     *
-     * @param planosFlux Flux de planos de venda a serem processados.
-     * @return Flux de planos de venda processados.
-     */
     public Flux<PlanoVenda> processarPlanosCSV(Flux<PlanoVenda> planosFlux) {
         logger.info("[{}] [Thread-{}] [PlanoVendaService] [Entrada] processarPlanosCSV com flux: {}",
                 LocalDateTime.now(), Thread.currentThread().getId(), planosFlux);
@@ -74,7 +53,7 @@ public class PlanoVendaService {
                 })
                 .map(this::calcularValorMeta)
                 .doOnNext(plano ->
-                        logger.info("[{}] [Thread-{}] [PlanoVendaService] [Funcional] Plano transformado com meta calculada: {}",
+                        logger.info("[{}] [Thread-{}] [PlanoVendaService] Plano transformado com meta calculada: {}",
                                 LocalDateTime.now(), Thread.currentThread().getId(), plano))
                 .delayElements(Duration.ofSeconds(1))
                 .doOnNext(plano ->

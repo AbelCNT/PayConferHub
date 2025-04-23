@@ -18,10 +18,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.IntStream;
 
-/**
- * Serviço responsável pelo cálculo e processamento de pagamentos mensais com base nos planos ativos.
- * Utiliza paradigmas assíncrono, reativo e funcional para otimizar o processamento de dados.
- */
 @Service
 public class PagamentoService {
     private static final Logger logger = LoggerFactory.getLogger(PagamentoService.class);
@@ -31,16 +27,6 @@ public class PagamentoService {
         this.planoVendaRepository = planoVendaRepository;
     }
 
-    /**
-     * Calcula o pagamento mensal de forma assíncrona.
-     * <p>
-     * Paradigma Assíncrono: Não bloqueia a execução principal do sistema.
-     * Paradigma Reativo: Processa dados de forma não bloqueante usando Mono.
-     * Paradigma Funcional: Usa operações funcionais para transformação e processamento de dados.
-     *
-     * @param parceiro Nome do parceiro para o qual será calculado o pagamento.
-     * @return Mono contendo o objeto Pagamento processado.
-     */
     public Mono<Pagamento> calcularPagamentoMensal(String parceiro) {
         logger.info("[{}] [Thread-{}] [PagamentoService] [Entrada] calcularPagamentoMensal para parceiro: {}",
                 LocalDateTime.now(), Thread.currentThread().getId(), parceiro);
@@ -54,7 +40,7 @@ public class PagamentoService {
                         logger.info("[{}] [Thread-{}] [PagamentoService] [Reativo] Planos ativos encontrados: {}",
                                 LocalDateTime.now(), Thread.currentThread().getId(), planos.size()))
                 .flatMap(planos -> {
-                    logger.info("[{}] [Thread-{}] [PagamentoService] [Funcional] Processando lista de planos para calcular o valor total",
+                    logger.info("[{}] [Thread-{}] [PagamentoService] Processando lista de planos para calcular o valor total",
                             LocalDateTime.now(), Thread.currentThread().getId());
                     BigDecimal valorTotal = calcularValorTotal(planos);
                     return executarCalculoDemorado(valorTotal, parceiro);
@@ -65,25 +51,12 @@ public class PagamentoService {
                                 LocalDateTime.now(), Thread.currentThread().getId(), parceiro));
     }
 
-    /**
-     * Calcula o valor total dos planos de forma funcional.
-     *
-     * @param planos Lista de planos de venda.
-     * @return Valor total somado de todos os planos.
-     */
-    private BigDecimal calcularValorTotal(List<PlanoVenda> planos) {
+    public BigDecimal calcularValorTotal(List<PlanoVenda> planos) {
         return planos.stream()
                 .map(PlanoVenda::getValor)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    /**
-     * Executa o cálculo demorado do pagamento de forma assíncrona e reativa utilizando Mono.
-     *
-     * @param valorTotal Valor total dos planos calculado previamente.
-     * @param parceiro   Nome do parceiro para o qual será calculado o pagamento.
-     * @return Mono contendo o objeto Pagamento processado.
-     */
     private Mono<Pagamento> executarCalculoDemorado(BigDecimal valorTotal, String parceiro) {
         long startTime = System.currentTimeMillis();
         logger.info("[{}] [Thread-{}] [PagamentoService] [Reativo] Iniciando cálculo demorado...",
@@ -115,11 +88,6 @@ public class PagamentoService {
                 });
     }
 
-    /**
-     * Salva os dados do pagamento em um arquivo CSV.
-     *
-     * @param pagamento Objeto contendo as informações do pagamento a ser registrado.
-     */
     private void salvarPagamentoEmArquivo(Pagamento pagamento) {
         String filePath = "pagamentos.csv";
         try (FileWriter writer = new FileWriter(filePath, true)) {
@@ -137,11 +105,6 @@ public class PagamentoService {
         }
     }
 
-    /**
-     * Executa múltiplas tarefas paralelas de forma assíncrona enquanto o cálculo do pagamento ocorre.
-     *
-     * @param numeroDeTarefas Número de tarefas a serem executadas em paralelo.
-     */
     private void executarMultiplasTarefasParalelas(int numeroDeTarefas) {
         CompletableFuture<?>[] tarefas = IntStream.rangeClosed(1, numeroDeTarefas)
                 .mapToObj(numeroTarefa -> CompletableFuture.runAsync(() -> {
