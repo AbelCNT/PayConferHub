@@ -29,13 +29,13 @@ class PagamentoServiceTest {
                 new PlanoVenda(2L, "Bronze", "ativo", new BigDecimal("500.00"), LocalDate.now())
         );
 
-        // Simula a busca de planos ativos como um fluxo reativo
+        // Simula a busca reativa de planos ativos retornando um Flux
         when(planoVendaRepository.findByStatus("ativo")).thenReturn(Flux.fromIterable(planosAtivos));
 
-        // Executa o cálculo assíncrono reativo
+        // Executa o cálculo do pagamento mensal (que envolve lógica reativa e assíncrona)
         Mono<Pagamento> pagamentoMono = pagamentoService.calcularPagamentoMensal("Parceiro1");
 
-        // Verifica o resultado usando StepVerifier
+        // Verifica o resultado do Mono usando StepVerifier (teste reativo)
         StepVerifier.create(pagamentoMono)
                 .expectNextMatches(pagamento -> {
                     assertEquals("Parceiro1", pagamento.getParceiro());

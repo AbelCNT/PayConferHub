@@ -27,25 +27,33 @@ public class PagamentoService {
         this.planoVendaRepository = planoVendaRepository;
     }
 
+    // [Programação Reativa]: Este Mono representa um resultado futuro (o Pagamento)
     public Mono<Pagamento> calcularPagamentoMensal(String parceiro) {
         logger.info("[{}] [Thread-{}] [PagamentoService] [Entrada] calcularPagamentoMensal para parceiro: {}",
                 LocalDateTime.now(), Thread.currentThread().getId(), parceiro);
 
+        // Flux reativo que emite uma lista dos planos ativos
         return planoVendaRepository.findByStatus("ativo")
+                // [Programação Reativa]: Operador doOnSubscribe é executado quando a subscrição acontece
                 .doOnSubscribe(subscription ->
                         logger.info("[{}] [Thread-{}] [PagamentoService] [Reativo] Iniciando busca dos planos ativos",
                                 LocalDateTime.now(), Thread.currentThread().getId()))
+                // [Programação Reativa]: Coleta todos os planos emitidos em uma única lista (Mono<List<PlanoVenda>>)
                 .collectList()
                 .doOnNext(planos ->
                         logger.info("[{}] [Thread-{}] [PagamentoService] [Reativo] Planos ativos encontrados: {}",
                                 LocalDateTime.now(), Thread.currentThread().getId(), planos.size()))
+                // [Programação Reativa]: flatMap permite transformar o Mono<List> em um novo Mono<Pagamento> de forma não-bloqueante
                 .flatMap(planos -> {
                     logger.info("[{}] [Thread-{}] [PagamentoService] Processando lista de planos para calcular o valor total",
                             LocalDateTime.now(), Thread.currentThread().getId());
                     BigDecimal valorTotal = calcularValorTotal(planos);
+                    //[Programação Assíncrona] Chamada para um metodo que executa um cálculo demorado de forma assíncrona
                     return executarCalculoDemorado(valorTotal, parceiro);
                 })
+                // [Programação Reativa]: subscribeOn move a execução do fluxo para um scheduler elástico, evitando bloquear a thread principal
                 .subscribeOn(Schedulers.boundedElastic())
+                // [Programação Reativa]: doFinally é executado quando o fluxo completa, ocorre um erro ou é cancelado
                 .doFinally(signalType ->
                         logger.info("[{}] [Thread-{}] [PagamentoService] [Saída] calcularPagamentoMensal para parceiro: {}",
                                 LocalDateTime.now(), Thread.currentThread().getId(), parceiro));
@@ -62,11 +70,14 @@ public class PagamentoService {
         logger.info("[{}] [Thread-{}] [PagamentoService] [Reativo] Iniciando cálculo demorado...",
                 LocalDateTime.now(), Thread.currentThread().getId());
 
+        // [Programação Assíncrona]: Mono.fromCallable encapsula uma operação potencialmente bloqueante para execução assíncrona
         return Mono.fromCallable(() -> {
                     logger.info("[{}] [Thread-{}] [PagamentoService] [Assíncrono] Simulando processamento demorado do cálculo...",
                             LocalDateTime.now(), Thread.currentThread().getId());
+                    // Simulação de múltiplas tarefas paralelas (assíncrono e paralelo)
                     executarMultiplasTarefasParalelas(3);
                     try {
+                        // [Programação Assíncrona]: Simulação de uma operação demorada (bloqueante)
                         Thread.sleep(7000);
                     } catch (InterruptedException e) {
                         logger.error("[{}] [Thread-{}] [PagamentoService] [Assíncrono] Erro durante a simulação de atraso: {}",
@@ -80,6 +91,7 @@ public class PagamentoService {
                     salvarPagamentoEmArquivo(pagamento);
                     return pagamento;
                 })
+                // [Programação Assíncrona]: Executa a operação em um scheduler diferente para não bloquear a thread principal
                 .subscribeOn(Schedulers.boundedElastic())
                 .doOnSuccess(pagamento -> {
                     long endTime = System.currentTimeMillis();

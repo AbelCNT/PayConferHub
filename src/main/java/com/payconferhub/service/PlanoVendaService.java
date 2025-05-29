@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 @Service
 public class PlanoVendaService {
     private static final Logger logger = LoggerFactory.getLogger(PlanoVendaService.class);
-
     private final PlanoVendaRepository planoVendaRepository;
 
     public PlanoVendaService(PlanoVendaRepository planoVendaRepository) {
@@ -44,21 +43,26 @@ public class PlanoVendaService {
         logger.info("[{}] [Thread-{}] [PlanoVendaService] [Entrada] processarPlanosCSV com flux: {}",
                 LocalDateTime.now(), Thread.currentThread().getId(), planosFlux);
 
+        // Flux reativo que representa o stream de planos a serem processados
         return planosFlux
+                // Operação reativa de filtro: processa apenas planos ativos
                 .filter(plano -> {
                     boolean ativo = "ativo".equals(plano.getStatus());
                     logger.info("[{}] [Thread-{}] [PlanoVendaService] [Reativo] Filtrando plano: {}, Ativo: {}",
                             LocalDateTime.now(), Thread.currentThread().getId(), plano, ativo);
                     return ativo;
                 })
+                // Operação reativa de transformação: calcula o valor da meta para cada plano
                 .map(this::calcularValorMeta)
                 .doOnNext(plano ->
                         logger.info("[{}] [Thread-{}] [PlanoVendaService] Plano transformado com meta calculada: {}",
                                 LocalDateTime.now(), Thread.currentThread().getId(), plano))
+                // Operação reativa que introduz um atraso em cada item do fluxo (simulando um processamento assíncrono individual dentro do fluxo reativo)
                 .delayElements(Duration.ofSeconds(1))
                 .doOnNext(plano ->
                         logger.info("[{}] [Thread-{}] [PlanoVendaService] [Reativo] Simulando processamento assíncrono para o plano: {}",
                                 LocalDateTime.now(), Thread.currentThread().getId(), plano))
+                // Operação reativa que salva cada plano processado no repositório (a operação de save pode ser assíncrona internamente)
                 .flatMap(planoVendaRepository::save)
                 .doOnNext(plano ->
                         logger.info("[{}] [Thread-{}] [PlanoVendaService] [Reativo] Plano salvo no repositório: {}",
@@ -66,7 +70,9 @@ public class PlanoVendaService {
                 .doOnComplete(() ->
                         logger.info("[{}] [Thread-{}] [PlanoVendaService] [Reativo] Processamento de todos os planos concluído.",
                                 LocalDateTime.now(), Thread.currentThread().getId()))
+                // Executa as operações do fluxo em um scheduler diferente para não bloquear a thread principal (comportamento reativo)
                 .subscribeOn(Schedulers.boundedElastic())
+                // Ação a ser executada quando o fluxo termina (com sucesso, erro ou cancelamento)
                 .doFinally(signalType ->
                         logger.info("[{}] [Thread-{}] [PlanoVendaService] [Saída] processarPlanosCSV com signal: {}",
                                 LocalDateTime.now(), Thread.currentThread().getId(), signalType));
